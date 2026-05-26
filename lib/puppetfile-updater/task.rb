@@ -13,6 +13,7 @@ class PuppetfileUpdater
 
     attr_accessor :user
     attr_accessor :module
+    attr_accessor :ignore
     attr_accessor :major
     attr_accessor :skip_git
     attr_accessor :gh_login
@@ -88,6 +89,7 @@ class PuppetfileUpdater
               m = aug.get(mpath)
               puts "D: Considering #{m} for git update" if @debug
               next if !@module.nil? && @module != m.gsub(%r{.*[-/]}, '')
+              next if !@ignore.nil? && Array(@ignore).include?(m.gsub(%r{.*[-/]}, ''))
               puts "D: #{m} selected by filters" if @debug
 
               warn "W: #{m} is a fork!" unless m =~ /#{@user}/
@@ -107,6 +109,7 @@ class PuppetfileUpdater
             m = aug.get(mpath).gsub('/', '-')
             puts "D: Considering #{m} for forge update" if @debug
             next if !@module.nil? && @module != m.gsub(%r{.*[-/]}, '')
+            next if !@ignore.nil? && Array(@ignore).include?(m.gsub(%r{.*[-/]}, ''))
             puts "D: #{m} selected by filters" if @debug
             v = aug.get("#{mpath}/@version")
             forge_m = PuppetForge::Module.find(m)
